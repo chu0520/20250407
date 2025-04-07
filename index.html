@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>選單與背景</title>
+  <style>
+    /* 主選單樣式 */
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex; /* 將選單設為橫排 */
+      gap: 10px; /* 選單項目之間的間距 */
+      z-index: 10; /* 確保選單在其他元素之上 */
+    }
+
+    li {
+      background-color: #ffcad4;
+      color: #BE77FF;
+      font-size: 20px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 2px solid #ffd6ff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    li:hover {
+      background-color: #fcf6bd;
+      color: #4f4f4f;
+      border-color: #d0f4de;
+    }
+
+    /* 子選單樣式 */
+    .submenu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .submenu li {
+      background-color: #ffcad4;
+      color: #000000;
+      font-size: 18px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 2px solid #ffd6ff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .submenu li:hover {
+      background-color: #fcf6bd;
+      color: #4f4f4f;
+      border-color: #d0f4de;
+    }
+
+    /* 顯示子選單 */
+    li:hover .submenu {
+      display: block;
+    }
+
+    /* Modal 樣式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+      z-index: 20;
+      padding: 20px;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      color: #ff0000;
+    }
+
+    /* 畫布樣式 */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0; /* 確保畫布在最底層 */
+    }
+  </style>
+</head>
+<body>
+  <ul>
+    <li onclick="showModal('首頁')">首頁</li>
+    <li onclick="showModal('自我介紹')">自我介紹</li>
+    <li>
+      作品集
+      <ul class="submenu">
+        <li onclick="window.open('https://chu0520.github.io/20250303/', '_blank')">第一周作業</li>
+        <li onclick="window.open('https://chu0520.github.io/202503103/', '_blank')">第二周作業</li>
+        <li onclick="window.open('https://chu0520.github.io/202503241/', '_blank')">第三周作業</li>
+        <li onclick="window.open('https://chu0520.github.io/202503171/', '_blank')">第四周作業</li>
+      </ul>
+    </li>
+    <li onclick="window.location.href='https://chu0520.github.io/202503103/'">測驗卷</li>
+    <li onclick="window.location.href='https://cfchen58.synology.me/%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%882024/B2/week1/20250217_092821.mp4'">教學影片</li>
+  </ul>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-header" id="modalHeader"></div>
+    <span class="modal-close" onclick="closeModal()">×</span>
+    <div id="modalContent"></div>
+  </div>
+
+  <script>
+    // 顯示 Modal
+    function showModal(title) {
+      const modal = document.getElementById('modal');
+      const modalHeader = document.getElementById('modalHeader');
+      const modalContent = document.getElementById('modalContent');
+
+      if (title === '自我介紹') {
+        // 自我介紹的特殊樣式與內容
+        modalHeader.textContent = '';
+        modalContent.innerHTML = `
+          <div style="
+            background-color: rgba(255, 255, 255, 0.8); 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+            margin: 80px;">
+            <p style="font-size: 18px; text-align: center;">老師好，我是實際上的朱玉萍</p>
+          </div>`;
+      } else {
+        // 其他選項的內容
+        modalHeader.textContent = title;
+        modalContent.textContent = `這是 ${title} 的內容。`;
+      }
+
+      modal.style.display = 'block';
+    }
+
+    // 關閉 Modal
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      modal.style.display = 'none';
+    }
+
+    // p5.js 繪製背景
+    let circles = [];
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      noStroke();
+
+      // 產生 40 個心形，隨機位置與顏色
+      for (let i = 0; i < 40; i++) {
+        circles.push({
+          x: random(width),
+          y: random(height),
+          size: random(20, 80),
+          color: color(random(255), random(255), random(255)),
+        });
+      }
+    }
+
+    function drawHeart(x, y, size) {
+      beginShape();
+      let scale = size / 50; // 調整心形的大小
+      vertex(x, y - 30 * scale);
+      bezierVertex(x - 25 * scale, y - 50 * scale, x - 50 * scale, y - 10 * scale, x, y + 30 * scale);
+      bezierVertex(x + 50 * scale, y - 10 * scale, x + 25 * scale, y - 50 * scale, x, y - 30 * scale);
+      endShape(CLOSE);
+    }
+
+    function draw() {
+      background("#FFECF5"); // 淡灰色背景，帶透明效果
+
+      // 根據滑鼠位置調整心形的大小
+      let sizeFactor = map(mouseX, 0, width, 20, 80);
+
+      // 繪製所有心形
+      for (let circle of circles) {
+        fill(circle.color);
+        drawHeart(circle.x, circle.y, circle.size * sizeFactor / 50);
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+</body>
+</html>
